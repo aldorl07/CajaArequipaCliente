@@ -1,0 +1,10 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Reglas de desarrollo: Permite lectura y escritura abierta para comenzar con S10
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
