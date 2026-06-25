@@ -84,6 +84,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       backgroundColor: AppColors.fondoInterfaz,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           _getAppBarTitle(),
           style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5),
