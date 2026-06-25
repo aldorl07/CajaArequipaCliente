@@ -4,6 +4,9 @@ import '../../viewmodel/auth_viewmodel.dart';
 import '../../viewmodel/home_viewmodel.dart';
 import '../../viewmodel/viewmodel_provider.dart';
 import '../../navigation/app_navigation.dart';
+import 'accounts_screen.dart';
+import 'credits_screen.dart';
+import 'profile_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -55,6 +58,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  // Títulos dinámicos para el AppBar según la pestaña activa
+  String _getAppBarTitle() {
+    switch (_currentTabIndex) {
+      case 0:
+        return 'Caja Arequipa';
+      case 1:
+        return 'Mis Cuentas';
+      case 2:
+        return 'Mis Créditos';
+      case 3:
+        return 'Mi Perfil';
+      default:
+        return 'Caja Arequipa';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authViewModel = ViewModelProvider.of<AuthViewModel>(context);
@@ -65,9 +84,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       backgroundColor: AppColors.fondoInterfaz,
       appBar: AppBar(
-        title: const Text(
-          'Caja Arequipa',
-          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5),
+        title: Text(
+          _getAppBarTitle(),
+          style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5),
         ),
         actions: [
           IconButton(
@@ -83,386 +102,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 color: AppColors.turquesaBrillante,
               ),
             )
-          : RefreshIndicator(
-              onRefresh: () => homeViewModel.fetchDashboardData(),
-              color: AppColors.turquesaBrillante,
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Banner de Bienvenida
-                    Container(
-                      width: double.infinity,
-                      decoration: const BoxDecoration(
-                        color: AppColors.azulMarino,
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(28),
-                          bottomRight: Radius.circular(28),
-                        ),
-                      ),
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 28),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Hola,',
-                            style: TextStyle(
-                              color: AppColors.blancoPuro.withValues(alpha: 0.7),
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            clientName,
-                            style: const TextStyle(
-                              color: AppColors.blancoPuro,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: AppColors.turquesaBrillante.withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: AppColors.turquesaBrillante.withValues(alpha: 0.5)),
-                                ),
-                                child: const Row(
-                                  children: [
-                                    Icon(Icons.security, color: AppColors.turquesaBrillante, size: 14),
-                                    SizedBox(width: 4),
-                                    Text(
-                                      'Token Digital Activo',
-                                      style: TextStyle(
-                                        color: AppColors.turquesaBrillante,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 20),
-                    
-                    // Sección: Mis Cuentas
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Text(
-                        'Cuentas de Ahorros',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.azulMarino,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Tarjeta Ahorros
-                    if (homeViewModel.savingsAccount != null)
-                      Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                        elevation: 3,
-                        shadowColor: AppColors.azulMarino.withValues(alpha: 0.1),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            gradient: LinearGradient(
-                              colors: [Colors.white, AppColors.fondoInterfaz.withValues(alpha: 0.3)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                          ),
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.turquesaBrillante.withValues(alpha: 0.15),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Icon(
-                                          Icons.account_balance_wallet_outlined,
-                                          color: AppColors.turquesaOscuro,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      const Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Ahorro Corriente',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: AppColors.azulMarino,
-                                            ),
-                                          ),
-                                          Text(
-                                            'Caja Arequipa',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: AppColors.textoGris,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textoGris),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                              Text(
-                                'N° ${homeViewModel.savingsAccount!.accountNumber}',
-                                style: const TextStyle(
-                                  fontFamily: 'monospace',
-                                  fontSize: 14,
-                                  color: AppColors.textoGris,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.baseline,
-                                textBaseline: TextBaseline.alphabetic,
-                                children: [
-                                  Text(
-                                    'Saldo Disponible',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: AppColors.textoGris.withValues(alpha: 0.8),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  Text(
-                                    '${homeViewModel.savingsAccount!.currency} ${homeViewModel.savingsAccount!.balance.toStringAsFixed(2)}',
-                                    style: const TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.azulMarino,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                    const SizedBox(height: 16),
-
-                    // Sección: Mis Créditos
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Text(
-                        'Créditos Activos',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.azulMarino,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Tarjeta Crédito
-                    if (homeViewModel.creditProduct != null)
-                      Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                        elevation: 3,
-                        shadowColor: AppColors.azulMarino.withValues(alpha: 0.1),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: AppColors.amarilloMostaza.withValues(alpha: 0.3),
-                              width: 1,
-                            ),
-                          ),
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.amarilloMostaza.withValues(alpha: 0.15),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Icon(
-                                          Icons.assignment_outlined,
-                                          color: AppColors.naranjaOcre,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            homeViewModel.creditProduct!.productName,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: AppColors.azulMarino,
-                                            ),
-                                          ),
-                                          Text(
-                                            'Contrato: ${homeViewModel.creditProduct!.contractNumber}',
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              color: AppColors.textoGris,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textoGris),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              Divider(color: AppColors.grisBorde.withValues(alpha: 0.5)),
-                              const SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    'Próxima Cuota',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: AppColors.textoOscuro,
-                                    ),
-                                  ),
-                                  Text(
-                                    '${homeViewModel.creditProduct!.currency} ${homeViewModel.creditProduct!.pendingInstallment.toStringAsFixed(2)}',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.rojoCoral,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 6),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Vence el:',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: AppColors.textoGris.withValues(alpha: 0.8),
-                                    ),
-                                  ),
-                                  Text(
-                                    homeViewModel.creditProduct!.dueDate,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.textoOscuro,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                    const SizedBox(height: 20),
-
-                    // Sección: Movimientos Recientes
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Text(
-                        'Movimientos Recientes',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.azulMarino,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Lista de transacciones
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: homeViewModel.transactions.length,
-                      itemBuilder: (context, index) {
-                        final tx = homeViewModel.transactions[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                          elevation: 1,
-                          child: ListTile(
-                            leading: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: tx.isIncome
-                                    ? AppColors.verdeCesped.withValues(alpha: 0.12)
-                                    : AppColors.rojoCoral.withValues(alpha: 0.12),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                tx.isIncome ? Icons.arrow_downward : Icons.arrow_upward,
-                                color: tx.isIncome ? AppColors.verdeCesped : AppColors.rojoCoral,
-                                size: 18,
-                              ),
-                            ),
-                            title: Text(
-                              tx.description,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textoOscuro,
-                              ),
-                            ),
-                            subtitle: Text(
-                              tx.date,
-                              style: const TextStyle(fontSize: 12, color: AppColors.textoGris),
-                            ),
-                            trailing: Text(
-                              '${tx.isIncome ? "+" : "-"} S/ ${tx.amount.toStringAsFixed(2)}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: tx.isIncome ? AppColors.verdeCesped : AppColors.textoOscuro,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 40),
-                  ],
-                ),
-              ),
+          : IndexedStack(
+              index: _currentTabIndex,
+              children: [
+                // Tab 0: Inicio (Dashboard principal)
+                _buildHomeTab(homeViewModel, clientName),
+                // Tab 1: Cuentas
+                const AccountsScreen(),
+                // Tab 2: Créditos
+                const CreditsScreen(),
+                // Tab 3: Perfil
+                const ProfileScreen(),
+              ],
             ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentTabIndex,
@@ -470,24 +121,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           setState(() {
             _currentTabIndex = index;
           });
-          if (index != 0) {
-            // Mostrar snackbar que indica que por rúbrica de S9 solo funciona la pestaña Inicio
-            ScaffoldMessenger.of(context).clearSnackBars();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: AppColors.azulMarino,
-                content: Text(
-                  'El Tab ${index == 1 ? "Cuentas" : index == 2 ? "Créditos" : "Perfil"} está deshabilitado temporalmente en la entrega S9.',
-                  style: const TextStyle(color: AppColors.blancoPuro),
-                ),
-                duration: const Duration(seconds: 2),
-              ),
-            );
-          }
         },
         type: BottomNavigationBarType.fixed,
         backgroundColor: AppColors.blancoPuro,
-        selectedItemColor: AppColors.amarilloMostaza, // Pestañas activas y resaltados en Amarillo/Mostaza
+        selectedItemColor: AppColors.amarilloMostaza,
         unselectedItemColor: AppColors.textoGris,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
         unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
@@ -509,6 +146,391 @@ class _DashboardScreenState extends State<DashboardScreen> {
             label: 'Perfil',
           ),
         ],
+      ),
+    );
+  }
+
+  // Widget del Tab Inicio (contenido original del Dashboard)
+  Widget _buildHomeTab(HomeViewModel homeViewModel, String clientName) {
+    return RefreshIndicator(
+      onRefresh: () => homeViewModel.fetchDashboardData(),
+      color: AppColors.turquesaBrillante,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Banner de Bienvenida
+            Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: AppColors.azulMarino,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(28),
+                  bottomRight: Radius.circular(28),
+                ),
+              ),
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 28),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Hola,',
+                    style: TextStyle(
+                      color: AppColors.blancoPuro.withValues(alpha: 0.7),
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    clientName,
+                    style: const TextStyle(
+                      color: AppColors.blancoPuro,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.turquesaBrillante.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppColors.turquesaBrillante.withValues(alpha: 0.5)),
+                        ),
+                        child: const Row(
+                          children: [
+                            Icon(Icons.security, color: AppColors.turquesaBrillante, size: 14),
+                            SizedBox(width: 4),
+                            Text(
+                              'Token Digital Activo',
+                              style: TextStyle(
+                                color: AppColors.turquesaBrillante,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 20),
+            
+            // Sección: Mis Cuentas
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Text(
+                'Cuentas de Ahorros',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.azulMarino,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // Tarjeta Ahorros
+            if (homeViewModel.savingsAccount != null)
+              Card(
+                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                elevation: 3,
+                shadowColor: AppColors.azulMarino.withValues(alpha: 0.1),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: LinearGradient(
+                      colors: [Colors.white, AppColors.fondoInterfaz.withValues(alpha: 0.3)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: AppColors.turquesaBrillante.withValues(alpha: 0.15),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.account_balance_wallet_outlined,
+                                  color: AppColors.turquesaOscuro,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              const Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Ahorro Corriente',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.azulMarino,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Caja Arequipa',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.textoGris,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textoGris),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'N° ${homeViewModel.savingsAccount!.accountNumber}',
+                        style: const TextStyle(
+                          fontFamily: 'monospace',
+                          fontSize: 14,
+                          color: AppColors.textoGris,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(
+                            'Saldo Disponible',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textoGris.withValues(alpha: 0.8),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Text(
+                            '${homeViewModel.savingsAccount!.currency} ${homeViewModel.savingsAccount!.balance.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.azulMarino,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+            const SizedBox(height: 16),
+
+            // Sección: Mis Créditos
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Text(
+                'Créditos Activos',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.azulMarino,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // Tarjeta Crédito
+            if (homeViewModel.creditProduct != null)
+              Card(
+                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                elevation: 3,
+                shadowColor: AppColors.azulMarino.withValues(alpha: 0.1),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppColors.amarilloMostaza.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: AppColors.amarilloMostaza.withValues(alpha: 0.15),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.assignment_outlined,
+                                  color: AppColors.naranjaOcre,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    homeViewModel.creditProduct!.productName,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.azulMarino,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Contrato: ${homeViewModel.creditProduct!.contractNumber}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.textoGris,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textoGris),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Divider(color: AppColors.grisBorde.withValues(alpha: 0.5)),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Próxima Cuota',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textoOscuro,
+                            ),
+                          ),
+                          Text(
+                            '${homeViewModel.creditProduct!.currency} ${homeViewModel.creditProduct!.pendingInstallment.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.rojoCoral,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Vence el:',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textoGris.withValues(alpha: 0.8),
+                            ),
+                          ),
+                          Text(
+                            homeViewModel.creditProduct!.dueDate,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textoOscuro,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+            const SizedBox(height: 20),
+
+            // Sección: Movimientos Recientes
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Text(
+                'Movimientos Recientes',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.azulMarino,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // Lista de transacciones
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: homeViewModel.transactions.length,
+              itemBuilder: (context, index) {
+                final tx = homeViewModel.transactions[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                  elevation: 1,
+                  child: ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: tx.isIncome
+                            ? AppColors.verdeCesped.withValues(alpha: 0.12)
+                            : AppColors.rojoCoral.withValues(alpha: 0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        tx.isIncome ? Icons.arrow_downward : Icons.arrow_upward,
+                        color: tx.isIncome ? AppColors.verdeCesped : AppColors.rojoCoral,
+                        size: 18,
+                      ),
+                    ),
+                    title: Text(
+                      tx.description,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textoOscuro,
+                      ),
+                    ),
+                    subtitle: Text(
+                      tx.date,
+                      style: const TextStyle(fontSize: 12, color: AppColors.textoGris),
+                    ),
+                    trailing: Text(
+                      '${tx.isIncome ? "+" : "-"} S/ ${tx.amount.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: tx.isIncome ? AppColors.verdeCesped : AppColors.textoOscuro,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 40),
+          ],
+        ),
       ),
     );
   }
