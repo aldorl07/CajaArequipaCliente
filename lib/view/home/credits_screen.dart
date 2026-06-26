@@ -904,26 +904,26 @@ class CreditsScreen extends StatelessWidget {
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          backgroundColor: const Color(0xFFE6EDE8), // Soft greenish-gray background
+          backgroundColor: AppColors.blancoPuro,
           contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
+              const Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.check_circle_outline,
-                    color: Color(0xFF2E6F40), // Soft dark green
+                    color: AppColors.verdeCesped,
                     size: 26,
                   ),
-                  const SizedBox(width: 10),
-                  const Text(
+                  SizedBox(width: 10),
+                  Text(
                     'Solicitud Enviada',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1B3322), // Deep forest green/black
+                      color: AppColors.azulMarino,
                     ),
                   ),
                 ],
@@ -933,7 +933,7 @@ class CreditsScreen extends StatelessWidget {
                 'Su solicitud ha sido registrada correctamente.',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Color(0xFF37473F), // Greenish-gray text
+                  color: AppColors.textoGris,
                 ),
               ),
               const SizedBox(height: 16),
@@ -941,7 +941,7 @@ class CreditsScreen extends StatelessWidget {
                 'Número de Expediente:',
                 style: TextStyle(
                   fontSize: 13,
-                  color: Color(0xFF4C5D53),
+                  color: AppColors.textoGris,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -951,7 +951,7 @@ class CreditsScreen extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1B3322),
+                  color: AppColors.azulMarino,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -960,7 +960,7 @@ class CreditsScreen extends StatelessWidget {
                 'Un asesor de negocios se pondrá en contacto pronto para realizar la visita en campo.',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Color(0xFF37473F),
+                  color: AppColors.textoGris,
                   height: 1.4,
                 ),
               ),
@@ -972,7 +972,7 @@ class CreditsScreen extends StatelessWidget {
                   child: const Text(
                     'ENTENDIDO',
                     style: TextStyle(
-                      color: Color(0xFF1B3322),
+                      color: AppColors.azulMarino,
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
