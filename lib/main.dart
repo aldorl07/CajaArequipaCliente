@@ -1,13 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'ui/theme/app_theme.dart';
 import 'navigation/app_navigation.dart';
 import 'viewmodel/auth_viewmodel.dart';
 import 'viewmodel/home_viewmodel.dart';
 import 'viewmodel/viewmodel_provider.dart';
 
-void main() {
+void main() async {
   // Aseguramos que la vinculación de widgets esté inicializada
   WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    debugPrint('Firebase initialization failed in Cliente App: $e');
+  }
 
   // Instanciamos los ViewModels que mantendrán el estado de la aplicación
   final authViewModel = AuthViewModel();

@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import '../../ui/theme/app_colors.dart';
+import '../../viewmodel/auth_viewmodel.dart';
+import '../../viewmodel/home_viewmodel.dart';
+import '../../viewmodel/viewmodel_provider.dart';
 
 class CreditsScreen extends StatelessWidget {
   const CreditsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final homeViewModel = ViewModelProvider.of<HomeViewModel>(context);
+    final authViewModel = ViewModelProvider.of<AuthViewModel>(context);
+    final clientName = authViewModel.user?.fullName ?? 'Aldo Alexandre Requena Lavi';
+    final credit = homeViewModel.creditProduct;
+    final pendingRequests = homeViewModel.pendingRequests;
+
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       child: Column(
@@ -48,54 +57,269 @@ class CreditsScreen extends StatelessWidget {
 
           const SizedBox(height: 24),
 
-          // Estado vacío - Sin créditos activos
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
-              decoration: BoxDecoration(
-                color: AppColors.blancoPuro,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.grisBorde),
+          // Lógica de Crédito Activo
+          if (credit != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [AppColors.azulMarino, Color(0xFF1E3A8A)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.azulMarino.withOpacity(0.15),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          credit.productName,
+                          style: const TextStyle(
+                            color: AppColors.amarilloMostaza,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Icon(Icons.credit_score, color: AppColors.blancoPuro),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'N° de Contrato: ${credit.contractNumber}',
+                      style: TextStyle(
+                        color: AppColors.blancoPuro.withOpacity(0.7),
+                        fontSize: 12,
+                      ),
+                    ),
+                    const Divider(color: AppColors.blancoPuro, height: 24, thickness: 0.5),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Deuda Total',
+                              style: TextStyle(
+                                color: AppColors.blancoPuro.withOpacity(0.7),
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${credit.currency} ${credit.totalDebt.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                color: AppColors.blancoPuro,
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Próxima Cuota',
+                              style: TextStyle(
+                                color: AppColors.blancoPuro.withOpacity(0.7),
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${credit.currency} ${credit.pendingInstallment.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                color: AppColors.blancoPuro,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Fecha de Vencimiento: ${credit.dueDate}',
+                      style: const TextStyle(
+                        color: AppColors.amarilloMostaza,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.turquesaBrillante.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
+            )
+          else
+            // Estado vacío - Sin créditos activos
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
+                decoration: BoxDecoration(
+                  color: AppColors.blancoPuro,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.grisBorde),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: AppColors.turquesaBrillante.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check_circle_outline,
+                        color: AppColors.verdeCesped,
+                        size: 48,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.check_circle_outline,
-                      color: AppColors.verdeCesped,
-                      size: 48,
+                    const SizedBox(height: 16),
+                    const Text(
+                      '¡Estás libre de deudas!',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.azulMarino,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    '¡Estás libre de deudas!',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.azulMarino,
+                    const SizedBox(height: 8),
+                    const Text(
+                      'No tienes créditos activos en este momento.\nExplora nuestras opciones de financiamiento.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textoGris,
+                        height: 1.5,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'No tienes créditos activos en este momento.\nExplora nuestras opciones de financiamiento.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textoGris,
-                      height: 1.5,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
+
+          // Lógica de Solicitudes Pendientes / En Curso
+          if (pendingRequests.isNotEmpty) ...[
+            const SizedBox(height: 28),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Solicitudes en Proceso',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.azulMarino,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            ...pendingRequests.map((req) {
+              final String id = req['id'] ?? '';
+              final String type = req['credit_type'] ?? 'Crédito';
+              final double amount = (req['amount'] as num?)?.toDouble() ?? 0.0;
+              final int term = req['term_months'] ?? 12;
+              final String status = req['status'] ?? 'Pendiente';
+
+              Color statusColor = AppColors.amarilloMostaza;
+              if (status == 'Aprobado') statusColor = AppColors.verdeCesped;
+              if (status == 'Rechazado') statusColor = AppColors.rojoCoral;
+
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                elevation: 2,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            type,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: AppColors.azulMarino,
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: statusColor.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              status.toUpperCase(),
+                              style: TextStyle(
+                                color: statusColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Monto Solicitado', style: TextStyle(color: AppColors.textoGris, fontSize: 12)),
+                              const SizedBox(height: 2),
+                              Text('S/ ${amount.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              const Text('Plazo', style: TextStyle(color: AppColors.textoGris, fontSize: 12)),
+                              const SizedBox(height: 2),
+                              Text('$term meses', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const Divider(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton.icon(
+                            onPressed: () => homeViewModel.cancelarSolicitud(id),
+                            icon: const Icon(Icons.cancel_outlined, size: 16, color: AppColors.rojoCoral),
+                            label: const Text(
+                              'Cancelar Solicitud',
+                              style: TextStyle(color: AppColors.rojoCoral, fontWeight: FontWeight.bold, fontSize: 13),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ],
 
           const SizedBox(height: 28),
 
@@ -124,47 +348,52 @@ class CreditsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Tarjeta: Crédito Personal
+          // Opciones de Crédito
           _buildCreditOption(
             context,
+            homeViewModel,
+            clientName,
             icon: Icons.person_outline,
             title: 'Crédito Personal',
             description: 'Para cubrir gastos personales, viajes, educación y más.',
             tasaDesde: '14.5% TEA',
-            montoMax: 'S/ 50,000',
+            maxAmount: 50000.0,
             color: AppColors.turquesaBrillante,
           ),
 
-          // Tarjeta: Crédito MYPE
           _buildCreditOption(
             context,
+            homeViewModel,
+            clientName,
             icon: Icons.store_outlined,
             title: 'Crédito MYPE Emprendedor',
             description: 'Capital de trabajo o activos fijos para tu negocio.',
             tasaDesde: '18.5% TEA',
-            montoMax: 'S/ 100,000',
+            maxAmount: 100000.0,
             color: AppColors.amarilloMostaza,
           ),
 
-          // Tarjeta: Crédito Hipotecario
           _buildCreditOption(
             context,
+            homeViewModel,
+            clientName,
             icon: Icons.home_outlined,
             title: 'Crédito Hipotecario',
             description: 'Adquiere la casa o departamento de tus sueños.',
             tasaDesde: '8.9% TEA',
-            montoMax: 'S/ 500,000',
+            maxAmount: 500000.0,
             color: AppColors.verdeCesped,
           ),
 
-          // Tarjeta: Crédito Vehicular
           _buildCreditOption(
             context,
+            homeViewModel,
+            clientName,
             icon: Icons.directions_car_outlined,
             title: 'Crédito Vehicular',
             description: 'Financia tu auto nuevo o seminuevo con las mejores tasas.',
             tasaDesde: '12.0% TEA',
-            montoMax: 'S/ 120,000',
+            maxAmount: 120000.0,
             color: AppColors.naranjaOcre,
           ),
 
@@ -205,7 +434,7 @@ class CreditsScreen extends StatelessWidget {
                   Text(
                     'Calcula tus cuotas mensuales antes de solicitar tu crédito.',
                     style: TextStyle(
-                      color: AppColors.blancoPuro.withValues(alpha: 0.8),
+                      color: AppColors.blancoPuro.withOpacity(0.8),
                       fontSize: 13,
                     ),
                   ),
@@ -248,31 +477,164 @@ class CreditsScreen extends StatelessWidget {
     );
   }
 
+  void _showRequestDialog(
+    BuildContext context,
+    HomeViewModel homeViewModel,
+    String clientName,
+    String creditType,
+    double maxAmount,
+  ) {
+    final formKey = GlobalKey<FormState>();
+    final amountController = TextEditingController();
+    int selectedTerm = 12;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: Text(
+                'Solicitar $creditType',
+                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.azulMarino, fontSize: 18),
+              ),
+              content: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Monto Máximo: S/ ${maxAmount.toStringAsFixed(0)}',
+                      style: const TextStyle(color: AppColors.textoGris, fontSize: 13, fontWeight: FontWeight.w500),
+                    ),
+                    const SizedBox(height: 14),
+                    TextFormField(
+                      controller: amountController,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      decoration: InputDecoration(
+                        labelText: 'Monto a solicitar (S/)',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        prefixIcon: const Icon(Icons.monetization_on_outlined, color: AppColors.azulMarino),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor ingrese un monto.';
+                        }
+                        final amount = double.tryParse(value);
+                        if (amount == null) {
+                          return 'Ingrese un número válido.';
+                        }
+                        if (amount <= 0) {
+                          return 'El monto debe ser mayor a 0.';
+                        }
+                        if (amount > maxAmount) {
+                          return 'El monto excede el límite permitido.';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<int>(
+                      value: selectedTerm,
+                      decoration: InputDecoration(
+                        labelText: 'Plazo de pago',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        prefixIcon: const Icon(Icons.calendar_month, color: AppColors.azulMarino),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 6, child: Text('6 meses')),
+                        DropdownMenuItem(value: 12, child: Text('12 meses')),
+                        DropdownMenuItem(value: 18, child: Text('18 meses')),
+                        DropdownMenuItem(value: 24, child: Text('24 meses')),
+                        DropdownMenuItem(value: 36, child: Text('36 meses')),
+                      ],
+                      onChanged: (val) {
+                        if (val != null) {
+                          setState(() {
+                            selectedTerm = val;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancelar', style: TextStyle(color: AppColors.textoGris, fontWeight: FontWeight.bold)),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (formKey.currentState!.validate()) {
+                      final double amount = double.parse(amountController.text);
+                      Navigator.of(context).pop();
+
+                      final success = await homeViewModel.solicitarCredito(
+                        clientName: clientName,
+                        creditType: creditType,
+                        amount: amount,
+                        termMonths: selectedTerm,
+                      );
+
+                      if (success && context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: AppColors.azulMarino,
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            content: const Row(
+                              children: [
+                                Icon(Icons.check_circle_outline, color: Colors.white),
+                                SizedBox(width: 12),
+                                Text(
+                                  'Solicitud enviada con éxito en tiempo real.',
+                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.azulMarino,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Solicitar', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildCreditOption(
-    BuildContext context, {
+    BuildContext context,
+    HomeViewModel homeViewModel,
+    String clientName, {
     required IconData icon,
     required String title,
     required String description,
     required String tasaDesde,
-    required String montoMax,
+    required double maxAmount,
     required Color color,
   }) {
+    final String formattedMax = 'S/ ${maxAmount.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}';
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
       elevation: 2,
-      shadowColor: AppColors.azulMarino.withValues(alpha: 0.08),
+      shadowColor: AppColors.azulMarino.withOpacity(0.08),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: AppColors.azulMarino,
-              content: Text('Solicitud de "$title" disponible próximamente.'),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        },
+        onTap: () => _showRequestDialog(context, homeViewModel, clientName, title, maxAmount),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -280,7 +642,7 @@ class CreditsScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.12),
+                  color: color.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(icon, color: color, size: 28),
@@ -311,7 +673,7 @@ class CreditsScreen extends StatelessWidget {
                       children: [
                         _buildTag('Desde $tasaDesde', color),
                         const SizedBox(width: 8),
-                        _buildTag('Hasta $montoMax', AppColors.azulMarino),
+                        _buildTag('Hasta $formattedMax', AppColors.azulMarino),
                       ],
                     ),
                   ],
@@ -330,7 +692,7 @@ class CreditsScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(

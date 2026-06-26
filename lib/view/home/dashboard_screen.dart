@@ -21,10 +21,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    // Cargar los datos ficticios al inicializar la vista
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authViewModel = ViewModelProvider.of<AuthViewModel>(context);
       final homeViewModel = ViewModelProvider.of<HomeViewModel>(context);
-      homeViewModel.fetchDashboardData();
+      final dni = authViewModel.user?.dni ?? '12345678';
+      homeViewModel.listenToClientData(dni);
     });
   }
 
