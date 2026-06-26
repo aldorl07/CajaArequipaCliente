@@ -32,7 +32,7 @@ class AuthViewModel extends ChangeNotifier {
       _user = UserModel(
         dni: _hardcodedDni,
         fullName: _hardcodedName,
-        email: 'aldo.rojas@cajaarequipa.pe',
+        email: 'aldorequena@cajaarequipa.pe',
         token: 'mock_jwt_token_caja_arequipa_2026',
       );
       _state = AuthState.success;
