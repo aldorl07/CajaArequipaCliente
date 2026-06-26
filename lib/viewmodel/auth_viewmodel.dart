@@ -52,6 +52,10 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
+  bool validateCredentials(String dni, String password) {
+    return dni == _hardcodedDni && password == _hardcodedPass;
+  }
+
   void logout() {
     _state = AuthState.initial;
     _user = null;
