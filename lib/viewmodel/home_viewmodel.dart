@@ -176,17 +176,28 @@ class HomeViewModel extends ChangeNotifier {
     if (_currentDni == null) return null;
 
     try {
-      final docRef = await FirebaseFirestore.instance.collection('credit_requests').add({
+      // Obtener las solicitudes existentes para calcular el consecutivo
+      final snapshot = await FirebaseFirestore.instance
+          .collection('credit_requests')
+          .where('dni', isEqualTo: _currentDni)
+          .get();
+
+      final int nextIndex = snapshot.docs.length + 1;
+      final String formattedIndex = nextIndex.toString().padLeft(3, '0');
+      final String expedienteId = 'EXP-2026-$formattedIndex';
+
+      await FirebaseFirestore.instance.collection('credit_requests').add({
         'dni': _currentDni,
         'client_name': clientName,
         'credit_type': creditType,
         'amount': amount,
         'term_months': termMonths,
         'status': 'Pendiente',
+        'expediente_id': expedienteId,
         'request_date': FieldValue.serverTimestamp(),
       });
-      final shortId = docRef.id.substring(docRef.id.length - 6).toUpperCase();
-      return 'EXP-2026-$shortId';
+
+      return expedienteId;
     } catch (e) {
       debugPrint('Error creating credit request: $e');
       return null;
