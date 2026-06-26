@@ -541,9 +541,9 @@ class CreditsScreen extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) {
+      builder: (dialogContext) {
         return StatefulBuilder(
-          builder: (context, setState) {
+          builder: (dialogStateContext, setState) {
             final double tea;
             final String teaLabel;
             if (creditType.contains('Personal')) {
@@ -823,7 +823,7 @@ class CreditsScreen extends StatelessWidget {
               actions: [
                 if (currentStep == 1) ...[
                   TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () => Navigator.of(dialogStateContext).pop(),
                     child: const Text('Cancelar', style: TextStyle(color: AppColors.textoGris, fontWeight: FontWeight.bold)),
                   ),
                   ElevatedButton(
@@ -867,7 +867,7 @@ class CreditsScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: acceptedTerms
                         ? () async {
-                            Navigator.of(context).pop();
+                            Navigator.of(dialogStateContext).pop();
 
                             final expedienteId = await homeViewModel.solicitarCredito(
                               clientName: clientName,
