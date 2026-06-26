@@ -18,7 +18,7 @@ class AuthViewModel extends ChangeNotifier {
   // Credenciales hardcodeadas requeridas para S9
   static const String _hardcodedDni = '12345678';
   static const String _hardcodedPass = '123456';
-  static const String _hardcodedName = 'Aldo Rojas';
+  static const String _hardcodedName = 'Aldo Alexandre Requena Lavi';
 
   Future<bool> login(String dni, String password) async {
     _state = AuthState.loading;

@@ -26,13 +26,10 @@ class HomeViewModel extends ChangeNotifier {
       balance: 4850.75,
     );
 
-    _creditProduct = CreditProduct(
-      productName: 'Crédito MYPE Emprendedor',
-      contractNumber: 'CRE-2026-9081',
-      totalDebt: 12500.00,
-      pendingInstallment: 520.40,
-      dueDate: '10 de Julio, 2026',
-    );
+
+    // El cliente no tiene créditos activos
+    _creditProduct = null;
+
 
     _transactions = [
       BankTransaction(

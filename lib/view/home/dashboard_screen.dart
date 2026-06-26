@@ -344,7 +344,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.0),
               child: Text(
-                'Créditos Activos',
+                'Créditos',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -354,115 +354,67 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 8),
 
-            // Tarjeta Crédito
-            if (homeViewModel.creditProduct != null)
-              Card(
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                elevation: 3,
-                shadowColor: AppColors.azulMarino.withValues(alpha: 0.1),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: AppColors.amarilloMostaza.withValues(alpha: 0.3),
-                      width: 1,
-                    ),
-                  ),
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: AppColors.amarilloMostaza.withValues(alpha: 0.15),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.assignment_outlined,
-                                  color: AppColors.naranjaOcre,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    homeViewModel.creditProduct!.productName,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.azulMarino,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Contrato: ${homeViewModel.creditProduct!.contractNumber}',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: AppColors.textoGris,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textoGris),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Divider(color: AppColors.grisBorde.withValues(alpha: 0.5)),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Próxima Cuota',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.textoOscuro,
-                            ),
-                          ),
-                          Text(
-                            '${homeViewModel.creditProduct!.currency} ${homeViewModel.creditProduct!.pendingInstallment.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.rojoCoral,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Vence el:',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textoGris.withValues(alpha: 0.8),
-                            ),
-                          ),
-                          Text(
-                            homeViewModel.creditProduct!.dueDate,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textoOscuro,
-                            ),
-                          ),
-                        ],
-                      ),
+            // Banner solicitar crédito
+            Card(
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              elevation: 3,
+              shadowColor: AppColors.azulMarino.withValues(alpha: 0.1),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.turquesaBrillante.withValues(alpha: 0.08),
+                      AppColors.verdeCesped.withValues(alpha: 0.05),
                     ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
                 ),
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.turquesaBrillante.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.add_circle_outline,
+                        color: AppColors.turquesaBrillante,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'No tienes créditos activos',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.azulMarino,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Solicita tu crédito desde la pestaña Créditos',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textoGris,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textoGris),
+                  ],
+                ),
               ),
+            ),
 
             const SizedBox(height: 20),
 
