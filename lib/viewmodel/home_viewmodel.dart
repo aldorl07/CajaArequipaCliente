@@ -143,16 +143,40 @@ class HomeViewModel extends ChangeNotifier {
     ];
   }
 
-  Future<bool> solicitarCredito({
+  Future<void> resetCreditDatabase() async {
+    try {
+      // 1. Limpiar el balance de crédito del cliente en Firestore
+      await FirebaseFirestore.instance.collection('clients').doc('12345678').set({
+        'savings_balance': 2000.0,
+        'current_loan_balance': 0.0,
+      }, SetOptions(merge: true));
+
+      // 2. Eliminar todas las solicitudes de crédito previas para este cliente
+      final requests = await FirebaseFirestore.instance
+          .collection('credit_requests')
+          .where('dni', isEqualTo: '12345678')
+          .get();
+
+      for (var doc in requests.docs) {
+        await doc.reference.delete();
+      }
+      
+      debugPrint('Database reset completed successfully for client 12345678.');
+    } catch (e) {
+      debugPrint('Error resetting credit database: $e');
+    }
+  }
+
+  Future<String?> solicitarCredito({
     required String clientName,
     required String creditType,
     required double amount,
     required int termMonths,
   }) async {
-    if (_currentDni == null) return false;
+    if (_currentDni == null) return null;
 
     try {
-      await FirebaseFirestore.instance.collection('credit_requests').add({
+      final docRef = await FirebaseFirestore.instance.collection('credit_requests').add({
         'dni': _currentDni,
         'client_name': clientName,
         'credit_type': creditType,
@@ -161,10 +185,11 @@ class HomeViewModel extends ChangeNotifier {
         'status': 'Pendiente',
         'request_date': FieldValue.serverTimestamp(),
       });
-      return true;
+      final shortId = docRef.id.substring(docRef.id.length - 6).toUpperCase();
+      return 'EXP-2026-$shortId';
     } catch (e) {
       debugPrint('Error creating credit request: $e');
-      return false;
+      return null;
     }
   }
 

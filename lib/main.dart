@@ -23,6 +23,9 @@ void main() async {
   final authViewModel = AuthViewModel();
   final homeViewModel = HomeViewModel();
 
+  // Reiniciamos la base de datos de créditos para empezar de 0 en la demostración
+  await homeViewModel.resetCreditDatabase();
+
   runApp(
     ViewModelProvider<AuthViewModel>(
       viewModel: authViewModel,

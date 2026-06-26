@@ -719,31 +719,15 @@ class CreditsScreen extends StatelessWidget {
 
                       Navigator.of(context).pop();
 
-                      final success = await homeViewModel.solicitarCredito(
+                      final expedienteId = await homeViewModel.solicitarCredito(
                         clientName: clientName,
                         creditType: creditType,
                         amount: amount,
                         termMonths: selectedTerm,
                       );
 
-                      if (success && context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            backgroundColor: AppColors.azulMarino,
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                            content: const Row(
-                              children: [
-                                Icon(Icons.check_circle_outline, color: Colors.white),
-                                SizedBox(width: 12),
-                                Text(
-                                  'Solicitud enviada con éxito en tiempo real.',
-                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
+                      if (expedienteId != null && context.mounted) {
+                        _showSuccessDialog(context, expedienteId);
                       }
                     }
                   },
@@ -757,6 +741,95 @@ class CreditsScreen extends StatelessWidget {
               ],
             );
           },
+        );
+      },
+    );
+  }
+
+  void _showSuccessDialog(BuildContext context, String expedienteId) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          backgroundColor: const Color(0xFFF9FAFB),
+          contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(
+                    Icons.check_circle_outline,
+                    color: AppColors.verdeCesped,
+                    size: 26,
+                  ),
+                  const SizedBox(width: 10),
+                  const Text(
+                    'Solicitud Enviada',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.azulMarino,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              const Text(
+                'Su solicitud ha sido registrada correctamente.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textoGris,
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Número de Expediente:',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: AppColors.textoGris,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                expedienteId,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.azulMarino,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Un asesor de negocios se pondrá en contacto pronto para realizar la visita en campo.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textoGris,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text(
+                    'ENTENDIDO',
+                    style: TextStyle(
+                      color: AppColors.azulMarino,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
