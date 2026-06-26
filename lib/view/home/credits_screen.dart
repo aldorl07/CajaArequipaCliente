@@ -73,7 +73,7 @@ class CreditsScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.azulMarino.withOpacity(0.15),
+                      color: AppColors.azulMarino.withValues(alpha: 0.15),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -100,7 +100,7 @@ class CreditsScreen extends StatelessWidget {
                     Text(
                       'N° de Contrato: ${credit.contractNumber}',
                       style: TextStyle(
-                        color: AppColors.blancoPuro.withOpacity(0.7),
+                        color: AppColors.blancoPuro.withValues(alpha: 0.7),
                         fontSize: 12,
                       ),
                     ),
@@ -114,7 +114,7 @@ class CreditsScreen extends StatelessWidget {
                             Text(
                               'Deuda Total',
                               style: TextStyle(
-                                color: AppColors.blancoPuro.withOpacity(0.7),
+                                color: AppColors.blancoPuro.withValues(alpha: 0.7),
                                 fontSize: 12,
                               ),
                             ),
@@ -135,7 +135,7 @@ class CreditsScreen extends StatelessWidget {
                             Text(
                               'Próxima Cuota',
                               style: TextStyle(
-                                color: AppColors.blancoPuro.withOpacity(0.7),
+                                color: AppColors.blancoPuro.withValues(alpha: 0.7),
                                 fontSize: 12,
                               ),
                             ),
@@ -182,7 +182,7 @@ class CreditsScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: AppColors.turquesaBrillante.withOpacity(0.1),
+                        color: AppColors.turquesaBrillante.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -264,7 +264,7 @@ class CreditsScreen extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: statusColor.withOpacity(0.12),
+                              color: statusColor.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -434,7 +434,7 @@ class CreditsScreen extends StatelessWidget {
                   Text(
                     'Calcula tus cuotas mensuales antes de solicitar tu crédito.',
                     style: TextStyle(
-                      color: AppColors.blancoPuro.withOpacity(0.8),
+                      color: AppColors.blancoPuro.withValues(alpha: 0.8),
                       fontSize: 13,
                     ),
                   ),
@@ -537,7 +537,7 @@ class CreditsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<int>(
-                      value: selectedTerm,
+                      initialValue: selectedTerm,
                       decoration: InputDecoration(
                         labelText: 'Plazo de pago',
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -631,7 +631,7 @@ class CreditsScreen extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
       elevation: 2,
-      shadowColor: AppColors.azulMarino.withOpacity(0.08),
+      shadowColor: AppColors.azulMarino.withValues(alpha: 0.08),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () => _showRequestDialog(context, homeViewModel, clientName, title, maxAmount),
@@ -642,7 +642,7 @@ class CreditsScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
+                  color: color.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(icon, color: color, size: 28),
@@ -692,7 +692,7 @@ class CreditsScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
