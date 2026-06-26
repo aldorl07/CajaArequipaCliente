@@ -359,7 +359,7 @@ class CreditsScreen extends StatelessWidget {
             title: 'Crédito Personal',
             description: 'Para cubrir gastos personales, viajes, educación y más.',
             tasaDesde: '14.5% TEA',
-            maxAmount: 50000.0,
+            maxAmount: 10000.0,
             color: AppColors.turquesaBrillante,
           ),
 
@@ -498,7 +498,7 @@ class CreditsScreen extends StatelessWidget {
 
     if (creditType.contains('Personal')) {
       minAmount = 500.0;
-      termOptions = [6, 12, 18, 24, 36];
+      termOptions = [6, 12, 18, 24];
       defaultTerm = 12;
     } else if (creditType.contains('MYPE')) {
       minAmount = 1000.0;
