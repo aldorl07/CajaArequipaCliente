@@ -355,74 +355,242 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 8),
 
-            // Banner solicitar crédito
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _currentTabIndex = 2;
-                });
-              },
-              child: Card(
+            // Banner de Crédito
+            if (homeViewModel.creditProduct != null)
+              Card(
                 margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 elevation: 3,
                 shadowColor: AppColors.azulMarino.withValues(alpha: 0.1),
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
-                    gradient: LinearGradient(
-                      colors: [
-                        AppColors.turquesaBrillante.withValues(alpha: 0.08),
-                        AppColors.verdeCesped.withValues(alpha: 0.05),
-                      ],
+                    gradient: const LinearGradient(
+                      colors: [AppColors.azulMarino, Color(0xFF1E3A8A)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                   ),
                   padding: const EdgeInsets.all(20.0),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppColors.turquesaBrillante.withValues(alpha: 0.15),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.add_circle_outline,
-                          color: AppColors.turquesaBrillante,
-                          size: 28,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            homeViewModel.creditProduct!.productName,
+                            style: const TextStyle(
+                              color: AppColors.amarilloMostaza,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Icon(Icons.credit_score, color: AppColors.blancoPuro),
+                        ],
                       ),
-                      const SizedBox(width: 16),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Deuda Total',
+                                style: TextStyle(
+                                  color: AppColors.blancoPuro.withValues(alpha: 0.7),
+                                  fontSize: 11,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'S/ ${homeViewModel.creditProduct!.totalDebt.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  color: AppColors.blancoPuro,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                'Próxima Cuota',
+                                style: TextStyle(
+                                  color: AppColors.blancoPuro.withValues(alpha: 0.7),
+                                  fontSize: 11,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'S/ ${homeViewModel.creditProduct!.pendingInstallment.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  color: AppColors.blancoPuro,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else if (homeViewModel.pendingRequests.isNotEmpty)
+              ...homeViewModel.pendingRequests.map((req) {
+                final String type = req['credit_type'] ?? 'Crédito';
+                final double amount = (req['amount'] as num?)?.toDouble() ?? 0.0;
+                final String status = req['status'] ?? 'Pendiente';
+                Color statusColor = AppColors.amarilloMostaza;
+                if (status == 'Aprobado') statusColor = AppColors.verdeCesped;
+                if (status == 'Rechazado') statusColor = AppColors.rojoCoral;
+
+                return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.grisBorde),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'No tienes créditos activos',
-                              style: TextStyle(
-                                fontSize: 15,
+                              type,
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
+                                fontSize: 15,
                                 color: AppColors.azulMarino,
                               ),
                             ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Solicita tu crédito desde la pestaña Créditos',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppColors.textoGris,
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: statusColor.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                status.toUpperCase(),
+                                style: TextStyle(
+                                  color: statusColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11,
+                                ),
                               ),
                             ),
                           ],
                         ),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('Monto Solicitado', style: TextStyle(color: AppColors.textoGris, fontSize: 11)),
+                                const SizedBox(height: 2),
+                                Text('S/ ${amount.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textoOscuro)),
+                              ],
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _currentTabIndex = 2;
+                                });
+                              },
+                              child: const Row(
+                                children: [
+                                  Text('Ver detalles', style: TextStyle(fontSize: 12, color: AppColors.azulMarino, fontWeight: FontWeight.bold)),
+                                  SizedBox(width: 4),
+                                  Icon(Icons.arrow_forward, size: 14, color: AppColors.azulMarino),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              })
+            else
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _currentTabIndex = 2;
+                  });
+                },
+                child: Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  elevation: 3,
+                  shadowColor: AppColors.azulMarino.withValues(alpha: 0.1),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.turquesaBrillante.withValues(alpha: 0.08),
+                          AppColors.verdeCesped.withValues(alpha: 0.05),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textoGris),
-                    ],
+                    ),
+                    padding: const EdgeInsets.all(20.0),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.turquesaBrillante.withValues(alpha: 0.15),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.add_circle_outline,
+                            color: AppColors.turquesaBrillante,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'No tienes créditos activos',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.azulMarino,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Solicita tu crédito desde la pestaña Créditos',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.textoGris,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textoGris),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
 
             const SizedBox(height: 20),
 

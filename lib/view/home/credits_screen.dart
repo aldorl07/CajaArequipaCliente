@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../ui/theme/app_colors.dart';
 import '../../viewmodel/auth_viewmodel.dart';
@@ -521,223 +522,373 @@ class CreditsScreen extends StatelessWidget {
     int selectedTerm = defaultTerm;
     String? authError;
     bool obscurePassword = true;
+    int currentStep = 1;
+    bool acceptedTerms = false;
+
+    Widget buildSummaryRow(String label, String value) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: const TextStyle(fontSize: 13, color: AppColors.textoGris, fontWeight: FontWeight.w500)),
+            Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textoOscuro)),
+          ],
+        ),
+      );
+    }
 
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
+            final double tea;
+            final String teaLabel;
+            if (creditType.contains('Personal')) {
+              tea = 0.145;
+              teaLabel = '14.5% TEA';
+            } else if (creditType.contains('MYPE')) {
+              tea = 0.185;
+              teaLabel = '18.5% TEA';
+            } else if (creditType.contains('Hipotecario')) {
+              tea = 0.089;
+              teaLabel = '8.9% TEA';
+            } else if (creditType.contains('Vehicular')) {
+              tea = 0.120;
+              teaLabel = '12.0% TEA';
+            } else {
+              tea = 0.120;
+              teaLabel = '12.0% TEA';
+            }
+
+            final double amount = double.tryParse(amountController.text) ?? 0.0;
+            final tem = math.pow(1 + tea, 1.0 / 12.0) - 1;
+            final cuota = amount > 0.0
+                ? (amount * tem) / (1.0 - math.pow(1.0 + tem, -selectedTerm))
+                : 0.0;
+            final totalAPagar = cuota * selectedTerm;
+
             return AlertDialog(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               title: Text(
-                'Solicitar $creditType',
+                currentStep == 1 ? 'Solicitar $creditType' : 'Simulación de Crédito',
                 style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.azulMarino, fontSize: 18),
               ),
               content: SingleChildScrollView(
-                child: Form(
-                  key: formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Rango: S/ ${minAmount.toStringAsFixed(0)} - S/ ${maxAmount.toStringAsFixed(0)}',
-                        style: const TextStyle(color: AppColors.textoGris, fontSize: 13, fontWeight: FontWeight.w500),
-                      ),
-                      const SizedBox(height: 14),
-                      TextFormField(
-                        controller: amountController,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        decoration: InputDecoration(
-                          labelText: 'Monto a solicitar (S/)',
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          prefixIcon: const Icon(Icons.monetization_on_outlined, color: AppColors.azulMarino),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor ingrese un monto.';
-                          }
-                          final amount = double.tryParse(value);
-                          if (amount == null) {
-                            return 'Ingrese un número válido.';
-                          }
-                          if (amount < minAmount) {
-                            return 'El monto mínimo es S/ ${minAmount.toStringAsFixed(0)}.';
-                          }
-                          if (amount > maxAmount) {
-                            return 'El monto excede el límite permitido.';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<int>(
-                        initialValue: selectedTerm,
-                        decoration: InputDecoration(
-                          labelText: 'Plazo de pago',
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          prefixIcon: const Icon(Icons.calendar_month, color: AppColors.azulMarino),
-                        ),
-                        items: termOptions.map((term) {
-                          final years = term ~/ 12;
-                          final label = term >= 12
-                              ? '$term meses ($years ${years == 1 ? "año" : "años"})'
-                              : '$term meses';
-                          return DropdownMenuItem<int>(
-                            value: term,
-                            child: Text(label),
-                          );
-                        }).toList(),
-                        onChanged: (val) {
-                          if (val != null) {
-                            setState(() {
-                              selectedTerm = val;
-                            });
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      const Divider(),
-                      const SizedBox(height: 12),
-                      const Row(
-                        children: [
-                          Icon(Icons.security, color: AppColors.amarilloMostaza, size: 18),
-                          SizedBox(width: 8),
-                          Text(
-                            'Confirmación de Seguridad',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.azulMarino,
+                child: currentStep == 1
+                    ? Form(
+                        key: formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Rango: S/ ${minAmount.toStringAsFixed(0)} - S/ ${maxAmount.toStringAsFixed(0)}',
+                              style: const TextStyle(color: AppColors.textoGris, fontSize: 13, fontWeight: FontWeight.w500),
                             ),
+                            const SizedBox(height: 14),
+                            TextFormField(
+                              controller: amountController,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              decoration: InputDecoration(
+                                labelText: 'Monto a solicitar (S/)',
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                prefixIcon: const Icon(Icons.monetization_on_outlined, color: AppColors.azulMarino),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingrese un monto.';
+                                }
+                                final amountVal = double.tryParse(value);
+                                if (amountVal == null) {
+                                  return 'Ingrese un número válido.';
+                                }
+                                if (amountVal < minAmount) {
+                                  return 'El monto mínimo es S/ ${minAmount.toStringAsFixed(0)}.';
+                                }
+                                if (amountVal > maxAmount) {
+                                  return 'El monto excede el límite permitido.';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            DropdownButtonFormField<int>(
+                              initialValue: selectedTerm,
+                              decoration: InputDecoration(
+                                labelText: 'Plazo de pago',
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                prefixIcon: const Icon(Icons.calendar_month, color: AppColors.azulMarino),
+                              ),
+                              items: termOptions.map((term) {
+                                final years = term ~/ 12;
+                                final label = term >= 12
+                                    ? '$term meses ($years ${years == 1 ? "año" : "años"})'
+                                    : '$term meses';
+                                return DropdownMenuItem<int>(
+                                  value: term,
+                                  child: Text(label),
+                                );
+                              }).toList(),
+                              onChanged: (val) {
+                                if (val != null) {
+                                  setState(() {
+                                    selectedTerm = val;
+                                  });
+                                }
+                              },
+                            ),
+                            const SizedBox(height: 20),
+                            const Divider(),
+                            const SizedBox(height: 12),
+                            const Row(
+                              children: [
+                                Icon(Icons.security, color: AppColors.amarilloMostaza, size: 18),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Confirmación de Seguridad',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.azulMarino,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            const Text(
+                              'Ingrese su DNI y contraseña del aplicativo para confirmar.',
+                              style: TextStyle(fontSize: 11, color: AppColors.textoGris),
+                            ),
+                            const SizedBox(height: 14),
+                            TextFormField(
+                              controller: dniController,
+                              keyboardType: TextInputType.number,
+                              maxLength: 8,
+                              decoration: InputDecoration(
+                                labelText: 'DNI de confirmación',
+                                counterText: '',
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                prefixIcon: const Icon(Icons.badge_outlined, color: AppColors.azulMarino),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Ingrese su DNI.';
+                                }
+                                if (value.length != 8 || double.tryParse(value) == null) {
+                                  return 'El DNI debe tener 8 dígitos.';
+                                }
+                                if (value != authViewModel.user?.dni) {
+                                  return 'El DNI no coincide con su usuario.';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 14),
+                            TextFormField(
+                              controller: passwordController,
+                              obscureText: obscurePassword,
+                              decoration: InputDecoration(
+                                labelText: 'Contraseña de la App',
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                prefixIcon: const Icon(Icons.lock_outline, color: AppColors.azulMarino),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                    color: AppColors.azulMarino,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      obscurePassword = !obscurePassword;
+                                    });
+                                  },
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Ingrese su contraseña.';
+                                }
+                                return null;
+                              },
+                            ),
+                            if (authError != null) ...[
+                              const SizedBox(height: 12),
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: AppColors.rojoCoral.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: AppColors.rojoCoral.withValues(alpha: 0.3)),
+                                ),
+                                child: Text(
+                                  authError!,
+                                  style: const TextStyle(
+                                    color: AppColors.rojoCoral,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      )
+                    : Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Resumen de la Operación',
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.azulMarino),
+                          ),
+                          const SizedBox(height: 8),
+                          buildSummaryRow('Tipo de Crédito:', creditType),
+                          buildSummaryRow('Monto Solicitado:', 'S/ ${amount.toStringAsFixed(2)}'),
+                          buildSummaryRow('Plazo seleccionado:', '$selectedTerm meses'),
+                          buildSummaryRow('Tasa de Interés:', teaLabel),
+                          const SizedBox(height: 16),
+                          const Divider(),
+                          const SizedBox(height: 12),
+                          const Text(
+                            'Simulación de Cronograma',
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.azulMarino),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColors.azulMarino.withValues(alpha: 0.05),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: AppColors.azulMarino.withValues(alpha: 0.1)),
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text('Cuota Mensual (aprox):', style: TextStyle(fontSize: 13, color: AppColors.textoGris, fontWeight: FontWeight.w500)),
+                                    Text(
+                                      'S/ ${cuota.toStringAsFixed(2)}',
+                                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.azulMarino),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text('Total Final a Pagar:', style: TextStyle(fontSize: 13, color: AppColors.textoGris, fontWeight: FontWeight.w500)),
+                                    Text(
+                                      'S/ ${totalAPagar.toStringAsFixed(2)}',
+                                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.azulMarino),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: Checkbox(
+                                  value: acceptedTerms,
+                                  activeColor: AppColors.azulMarino,
+                                  onChanged: (val) {
+                                    setState(() {
+                                      acceptedTerms = val ?? false;
+                                    });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              const Expanded(
+                                child: Text(
+                                  'Acepto los términos y condiciones del crédito.',
+                                  style: TextStyle(fontSize: 12, color: AppColors.textoGris, fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'Ingrese su DNI y contraseña del aplicativo para confirmar.',
-                        style: TextStyle(fontSize: 11, color: AppColors.textoGris),
-                      ),
-                      const SizedBox(height: 14),
-                      TextFormField(
-                        controller: dniController,
-                        keyboardType: TextInputType.number,
-                        maxLength: 8,
-                        decoration: InputDecoration(
-                          labelText: 'DNI de confirmación',
-                          counterText: '',
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          prefixIcon: const Icon(Icons.badge_outlined, color: AppColors.azulMarino),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Ingrese su DNI.';
-                          }
-                          if (value.length != 8 || double.tryParse(value) == null) {
-                            return 'El DNI debe tener 8 dígitos.';
-                          }
-                          if (value != authViewModel.user?.dni) {
-                            return 'El DNI no coincide con su usuario.';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 14),
-                      TextFormField(
-                        controller: passwordController,
-                        obscureText: obscurePassword,
-                        decoration: InputDecoration(
-                          labelText: 'Contraseña de la App',
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          prefixIcon: const Icon(Icons.lock_outline, color: AppColors.azulMarino),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              obscurePassword ? Icons.visibility_off : Icons.visibility,
-                              color: AppColors.azulMarino,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                obscurePassword = !obscurePassword;
-                              });
-                            },
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Ingrese su contraseña.';
-                          }
-                          return null;
-                        },
-                      ),
-                      if (authError != null) ...[
-                        const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: AppColors.rojoCoral.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppColors.rojoCoral.withValues(alpha: 0.3)),
-                          ),
-                          child: Text(
-                            authError!,
-                            style: const TextStyle(
-                              color: AppColors.rojoCoral,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
               ),
               actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancelar', style: TextStyle(color: AppColors.textoGris, fontWeight: FontWeight.bold)),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    setState(() {
-                      authError = null;
-                    });
-
-                    if (formKey.currentState!.validate()) {
-                      final double amount = double.parse(amountController.text);
-                      final dni = dniController.text.trim();
-                      final password = passwordController.text;
-
-                      if (!authViewModel.validateCredentials(dni, password)) {
-                        setState(() {
-                          authError = 'DNI o contraseña del aplicativo incorrectos.';
-                        });
-                        return;
-                      }
-
-                      Navigator.of(context).pop();
-
-                      final expedienteId = await homeViewModel.solicitarCredito(
-                        clientName: clientName,
-                        creditType: creditType,
-                        amount: amount,
-                        termMonths: selectedTerm,
-                      );
-
-                      if (expedienteId != null && context.mounted) {
-                        _showSuccessDialog(context, expedienteId);
-                      }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.azulMarino,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                if (currentStep == 1) ...[
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Cancelar', style: TextStyle(color: AppColors.textoGris, fontWeight: FontWeight.bold)),
                   ),
-                  child: const Text('Solicitar', style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        authError = null;
+                      });
+
+                      if (formKey.currentState!.validate()) {
+                        final dni = dniController.text.trim();
+                        final password = passwordController.text;
+
+                        if (!authViewModel.validateCredentials(dni, password)) {
+                          setState(() {
+                            authError = 'DNI o contraseña del aplicativo incorrectos.';
+                          });
+                          return;
+                        }
+
+                        setState(() {
+                          currentStep = 2;
+                        });
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.azulMarino,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text('Continuar', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ] else ...[
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        currentStep = 1;
+                      });
+                    },
+                    child: const Text('Atrás', style: TextStyle(color: AppColors.textoGris, fontWeight: FontWeight.bold)),
+                  ),
+                  ElevatedButton(
+                    onPressed: acceptedTerms
+                        ? () async {
+                            Navigator.of(context).pop();
+
+                            final expedienteId = await homeViewModel.solicitarCredito(
+                              clientName: clientName,
+                              creditType: creditType,
+                              amount: amount,
+                              termMonths: selectedTerm,
+                            );
+
+                            if (expedienteId != null && context.mounted) {
+                              _showSuccessDialog(context, expedienteId);
+                            }
+                          }
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.azulMarino,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text('Solicitar Crédito', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ],
               ],
             );
           },
