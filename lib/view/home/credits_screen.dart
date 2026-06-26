@@ -300,20 +300,22 @@ class CreditsScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const Divider(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton.icon(
-                            onPressed: () => homeViewModel.cancelarSolicitud(id),
-                            icon: const Icon(Icons.cancel_outlined, size: 16, color: AppColors.rojoCoral),
-                            label: const Text(
-                              'Cancelar Solicitud',
-                              style: TextStyle(color: AppColors.rojoCoral, fontWeight: FontWeight.bold, fontSize: 13),
+                      if (status == 'Pendiente') ...[
+                        const Divider(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton.icon(
+                              onPressed: () => homeViewModel.cancelarSolicitud(id),
+                              icon: const Icon(Icons.cancel_outlined, size: 16, color: AppColors.rojoCoral),
+                              label: const Text(
+                                'Cancelar Solicitud',
+                                style: TextStyle(color: AppColors.rojoCoral, fontWeight: FontWeight.bold, fontSize: 13),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                      ],
                     ],
                   ),
                 ),
