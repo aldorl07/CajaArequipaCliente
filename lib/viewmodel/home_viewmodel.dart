@@ -9,6 +9,44 @@ class HomeViewModel extends ChangeNotifier {
   CreditProduct? _creditProduct;
   List<BankTransaction> _transactions = [];
 
+  final List<BankTransaction> _baseTransactions = [
+    BankTransaction(
+      id: 'TXN001',
+      description: 'Transferencia Recibida de Juan Pérez',
+      amount: 850.00,
+      date: 'Hoy, 10:15 AM',
+      isIncome: true,
+    ),
+    BankTransaction(
+      id: 'TXN002',
+      description: 'Pago de Servicio Claro Hogar',
+      amount: 129.90,
+      date: 'Ayer, 04:30 PM',
+      isIncome: false,
+    ),
+    BankTransaction(
+      id: 'TXN003',
+      description: 'Retiro de Efectivo Cajero Caja Arequipa',
+      amount: 200.00,
+      date: '23 Jun 2026',
+      isIncome: false,
+    ),
+    BankTransaction(
+      id: 'TXN004',
+      description: 'Abono de Intereses Cuenta Ahorro',
+      amount: 15.20,
+      date: '20 Jun 2026',
+      isIncome: true,
+    ),
+    BankTransaction(
+      id: 'TXN005',
+      description: 'Compra Supermercados Metro',
+      amount: 94.30,
+      date: '18 Jun 2026',
+      isIncome: false,
+    ),
+  ];
+
   // Para las solicitudes de crédito
   List<Map<String, dynamic>> _pendingRequests = [];
   StreamSubscription<DocumentSnapshot>? _clientSub;
@@ -68,8 +106,21 @@ class HomeViewModel extends ChangeNotifier {
             pendingInstallment: currentLoanBalance / 12, // Simulamos 12 cuotas
             dueDate: '15 Jul 2026',
           );
+
+          // Agregar transacción de desembolso al inicio de la lista
+          _transactions = [
+            BankTransaction(
+              id: 'TXN_CREDIT',
+              description: 'Saldo de Crédito Desembolsado',
+              amount: currentLoanBalance,
+              date: 'Hoy, 12:00 PM',
+              isIncome: true,
+            ),
+            ..._baseTransactions,
+          ];
         } else {
           _creditProduct = null;
+          _transactions = List.from(_baseTransactions);
         }
       } else {
         _savingsAccount = SavingsAccount(
@@ -78,6 +129,7 @@ class HomeViewModel extends ChangeNotifier {
           balance: 2000.0,
         );
         _creditProduct = null;
+        _transactions = List.from(_baseTransactions);
       }
       _isLoading = false;
       notifyListeners();
@@ -102,45 +154,6 @@ class HomeViewModel extends ChangeNotifier {
     }, onError: (err) {
       debugPrint('Error listening to credit requests: $err');
     });
-
-    // Transacciones simuladas
-    _transactions = [
-      BankTransaction(
-        id: 'TXN001',
-        description: 'Transferencia Recibida de Juan Pérez',
-        amount: 850.00,
-        date: 'Hoy, 10:15 AM',
-        isIncome: true,
-      ),
-      BankTransaction(
-        id: 'TXN002',
-        description: 'Pago de Servicio Claro Hogar',
-        amount: 129.90,
-        date: 'Ayer, 04:30 PM',
-        isIncome: false,
-      ),
-      BankTransaction(
-        id: 'TXN003',
-        description: 'Retiro de Efectivo Cajero Caja Arequipa',
-        amount: 200.00,
-        date: '23 Jun 2026',
-        isIncome: false,
-      ),
-      BankTransaction(
-        id: 'TXN004',
-        description: 'Abono de Intereses Cuenta Ahorro',
-        amount: 15.20,
-        date: '20 Jun 2026',
-        isIncome: true,
-      ),
-      BankTransaction(
-        id: 'TXN005',
-        description: 'Compra Supermercados Metro',
-        amount: 94.30,
-        date: '18 Jun 2026',
-        isIncome: false,
-      ),
-    ];
   }
 
   Future<void> resetCreditDatabase() async {
