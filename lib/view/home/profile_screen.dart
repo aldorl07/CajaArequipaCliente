@@ -3,6 +3,7 @@ import '../../ui/theme/app_colors.dart';
 import '../../viewmodel/auth_viewmodel.dart';
 import '../../viewmodel/viewmodel_provider.dart';
 import '../../navigation/app_navigation.dart';
+import '../../viewmodel/home_viewmodel.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -177,6 +178,79 @@ class ProfileScreen extends StatelessWidget {
                     'Términos y Condiciones',
                     'Documentos legales',
                   ),
+                  _buildDivider(),
+                  _buildMenuTile(
+                    context,
+                    Icons.refresh,
+                    'Reiniciar Créditos (Demo)',
+                    'Borrar solicitudes y volver a empezar',
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext ctx) {
+                          return AlertDialog(
+                            title: const Text('Reiniciar Datos'),
+                            content: const Text(
+                              '¿Desea borrar las solicitudes de crédito creadas y restablecer el saldo del préstamo a S/ 0 para iniciar una nueva demostración?',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(ctx).pop(),
+                                child: const Text(
+                                  'Cancelar',
+                                  style: TextStyle(color: AppColors.textoGris),
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  Navigator.of(ctx).pop();
+                                  final homeViewModel = ViewModelProvider.of<HomeViewModel>(context);
+                                  
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      backgroundColor: AppColors.azulMarino,
+                                      content: Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                            ),
+                                          ),
+                                          SizedBox(width: 16),
+                                          Text('Restableciendo base de datos...'),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+
+                                  await homeViewModel.resetCreditDatabase();
+
+                                  if (!context.mounted) return;
+
+                                  ScaffoldMessenger.of(context).clearSnackBars();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      backgroundColor: AppColors.turquesaOscuro,
+                                      content: Text('Base de datos restablecida correctamente.'),
+                                      duration: Duration(seconds: 2),
+                                    ),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.turquesaBrillante,
+                                  foregroundColor: Colors.white,
+                                ),
+                                child: const Text('Confirmar'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -283,7 +357,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuTile(BuildContext context, IconData icon, String title, String subtitle) {
+  Widget _buildMenuTile(BuildContext context, IconData icon, String title, String subtitle, {VoidCallback? onTap}) {
     return ListTile(
       leading: Container(
         padding: const EdgeInsets.all(8),
@@ -309,7 +383,7 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
       trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textoGris),
-      onTap: () {
+      onTap: onTap ?? () {
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
