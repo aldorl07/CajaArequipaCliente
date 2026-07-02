@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../model/user_model.dart';
 
 enum AuthState { initial, loading, success, error }
@@ -15,7 +16,7 @@ class AuthViewModel extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   UserModel? get user => _user;
 
-  // Credenciales hardcodeadas requeridas para S9
+  // Credenciales hardcodeadas requeridas por defecto
   static const String _hardcodedDni = '12345678';
   static const String _hardcodedPass = '123456';
   static const String _hardcodedName = 'Aldo Alexandre Requena Lavi';
@@ -28,11 +29,31 @@ class AuthViewModel extends ChangeNotifier {
     // Simulamos un retraso de red de 1.5 segundos para mejorar la experiencia de usuario (loading state)
     await Future.delayed(const Duration(milliseconds: 1500));
 
+    // 1. Intentar validar contra Firestore (permite iniciar sesión con cualquiera de los 30 casos)
+    try {
+      final clientDoc = await FirebaseFirestore.instance.collection('clients').doc(dni).get();
+      if (clientDoc.exists && (password == '123456' || (dni == _hardcodedDni && password == _hardcodedPass))) {
+        final data = clientDoc.data()!;
+        _user = UserModel(
+          dni: dni,
+          fullName: data['name'] ?? 'Cliente',
+          email: data['email'] ?? 'aldorequena@outlook.com', // Correo solicitado por el usuario
+          token: 'mock_jwt_token_caja_arequipa_2026',
+        );
+        _state = AuthState.success;
+        notifyListeners();
+        return true;
+      }
+    } catch (e) {
+      debugPrint('Error al consultar cliente en Firestore: $e');
+    }
+
+    // 2. Fallback para credenciales hardcodeadas por defecto
     if (dni == _hardcodedDni && password == _hardcodedPass) {
       _user = UserModel(
         dni: _hardcodedDni,
         fullName: _hardcodedName,
-        email: 'aldorequena@cajaarequipa.pe',
+        email: 'aldorequena@outlook.com',
         token: 'mock_jwt_token_caja_arequipa_2026',
       );
       _state = AuthState.success;
@@ -53,7 +74,8 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   bool validateCredentials(String dni, String password) {
-    return dni == _hardcodedDni && password == _hardcodedPass;
+    if (_user == null) return false;
+    return dni == _user!.dni && (password == '123456' || (dni == _hardcodedDni && password == _hardcodedPass));
   }
 
   void logout() {

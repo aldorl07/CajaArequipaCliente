@@ -239,7 +239,7 @@ class CreditsScreen extends StatelessWidget {
               final String status = req['status'] ?? 'Pendiente';
 
               Color statusColor = AppColors.amarilloMostaza;
-              if (status == 'Aprobado') statusColor = AppColors.verdeCesped;
+              if (status == 'Aprobado' || status == 'Condicionado') statusColor = AppColors.verdeCesped;
               if (status == 'Rechazado') statusColor = AppColors.rojoCoral;
 
               return Card(
@@ -538,20 +538,22 @@ class CreditsScreen extends StatelessWidget {
       );
     }
 
+    bool conSeguro = true;
+    double tea = 0.185;
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (dialogStateContext, setState) {
-            final double tea;
             final String teaLabel;
             if (creditType.contains('Personal')) {
               tea = 0.145;
               teaLabel = '14.5% TEA';
             } else if (creditType.contains('MYPE')) {
-              tea = 0.185;
-              teaLabel = '18.5% TEA';
+              tea = conSeguro ? 0.4092 : 0.4392;
+              teaLabel = conSeguro ? '40.92% TEA (con seguro)' : '43.92% TEA (sin seguro)';
             } else if (creditType.contains('Hipotecario')) {
               tea = 0.089;
               teaLabel = '8.9% TEA';
@@ -640,6 +642,27 @@ class CreditsScreen extends StatelessWidget {
                                 }
                               },
                             ),
+                            if (creditType.contains('MYPE')) ...[
+                              const SizedBox(height: 12),
+                              CheckboxListTile(
+                                title: const Text(
+                                  'Seguro de desgravamen',
+                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.azulMarino),
+                                ),
+                                subtitle: const Text(
+                                  'TEA 40.92% con seguro / 43.92% sin seguro',
+                                  style: TextStyle(fontSize: 11, color: AppColors.textoGris),
+                                ),
+                                value: conSeguro,
+                                activeColor: AppColors.turquesaBrillante,
+                                contentPadding: EdgeInsets.zero,
+                                onChanged: (val) {
+                                  setState(() {
+                                    conSeguro = val ?? false;
+                                  });
+                                },
+                              ),
+                            ],
                             const SizedBox(height: 20),
                             const Divider(),
                             const SizedBox(height: 12),
@@ -874,6 +897,8 @@ class CreditsScreen extends StatelessWidget {
                               creditType: creditType,
                               amount: amount,
                               termMonths: selectedTerm,
+                              tea: tea,
+                              conSeguro: conSeguro,
                             );
 
                             if (expedienteId != null && context.mounted) {

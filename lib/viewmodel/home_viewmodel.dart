@@ -185,6 +185,8 @@ class HomeViewModel extends ChangeNotifier {
     required String creditType,
     required double amount,
     required int termMonths,
+    double? tea,
+    bool? conSeguro,
   }) async {
     if (_currentDni == null) return null;
 
@@ -208,6 +210,8 @@ class HomeViewModel extends ChangeNotifier {
         'status': 'Pendiente',
         'expediente_id': expedienteId,
         'request_date': FieldValue.serverTimestamp(),
+        'tea': tea ?? 0.185,
+        'con_seguro': conSeguro ?? false,
       });
 
       return expedienteId;
